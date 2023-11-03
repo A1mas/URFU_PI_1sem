@@ -2,18 +2,12 @@
 # model
 # https://huggingface.co/suno/bark-small
 
-from bark import SAMPLE_RATE, generate_audio, preload_models
-from IPython.display import Audio
+from transformers import pipeline
+import scipy
 
-# download and load all models
-preload_models()
+synthesiser = pipeline("text-to-speech", "suno/bark-small")
 
-# generate audio from text
-text_prompt = """
-     Hello, my name is Suno. And, uh — and I like pizza. [laughs] 
-     But I also have other interests such as playing tic tac toe.
-"""
-speech_array = generate_audio(text_prompt)
+speech = synthesiser("Hello, my dog is cooler than you!", forward_params={"do_sample": True})
 
-# play text in notebook
-Audio(speech_array, rate=SAMPLE_RATE)
+scipy.io.wavfile.write("bark_out.wav", rate=speech["sampling_rate"], data=speech["audio"])
+
